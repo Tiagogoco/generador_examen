@@ -1,0 +1,33 @@
+
+.cont {
+    margin-top: 200px;
+}
+.card {
+    margin-top: 20px;
+}
+
+body {
+    background-color: #575669;
+}
+
+h2 {
+    color: white;
+}
+
+label {
+    color: white;
+}
+
+.btn {
+    background-color: #252330;
+    color: white;
+
+}
+
+.sub {
+    color: white;
+}
+
+.card {
+    background-color: #3B3A4A;
+}
