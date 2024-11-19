@@ -9,32 +9,35 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(20), unique=True, nullable=False)
     apellidos = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
-    correo = db.Column(db.String(50), unique=True, nullable=False)  # Corregido a db.String
-    tipo = db.Column(db.String(20))  # Campo para la herencia de tabla única
+    correo = db.Column(db.String(50), unique=True, nullable=False)
+    tipo = db.Column(db.String(20))  # Campo para distinguir entre tipos de usuario
 
     __mapper_args__ = {
         'polymorphic_identity': 'usuario',
         'polymorphic_on': tipo
     }
 
-class Estudiante(Usuario):
+class Estudiante(db.Model):
     __tablename__ = 'estudiantes'
-    id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(20), unique=True, nullable=False)
+    apellidos = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.Text, nullable=False)
+    correo = db.Column(db.String(50), unique=True, nullable=False)
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'estudiante',
-    }
+    def __repr__(self):
+        return f'<Estudiante {self.nombre}>'
 
-class Profesor(Usuario):
+class Profesor(db.Model):
     __tablename__ = 'profesores'
-    id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(20), unique=True, nullable=False)
+    apellidos = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.Text, nullable=False)
+    correo = db.Column(db.String(50), unique=True, nullable=False)
 
     # Relación con las preguntas
     preguntas = db.relationship('Pregunta', back_populates='profesor', lazy=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'profesor',
-    }
 
     def __repr__(self):
         return f'<Profesor {self.nombre}>'
@@ -42,16 +45,16 @@ class Profesor(Usuario):
 class Pregunta(db.Model):
     __tablename__ = 'preguntas'
     id = db.Column(db.Integer, primary_key=True)
-    area = db.Column(db.String(20), nullable=False)
-    definicion_operacional = db.Column(db.Text, nullable=False)
-    base_reactivo = db.Column(db.Text, nullable=False)
-    opcion1 = db.Column(db.Text, nullable=False)
-    opcion2 = db.Column(db.Text, nullable=False)
-    opcion3 = db.Column(db.Text, nullable=False)
-    opcion4 = db.Column(db.Text, nullable=False)
-    tipo_respuesta = db.Column(db.String(20), nullable=False)
-    argumentacion = db.Column(db.String(20), nullable=False)
-
+    area = db.Column(db.String(100), nullable=False)  # Aumenta el límite si es necesario
+    definicion_operacional = db.Column(db.String(255), nullable=False)  # Ajusta el tamaño
+    base_reactivo = db.Column(db.String(255), nullable=False)
+    opcion1 = db.Column(db.String(100), nullable=False)  # Asegúrate de que las opciones tengan suficiente espacio
+    opcion2 = db.Column(db.String(100), nullable=False)
+    opcion3 = db.Column(db.String(100), nullable=False)
+    opcion4 = db.Column(db.String(100), nullable=False)
+    tipo_respuesta = db.Column(db.String(50), nullable=False)  # Aumenta si es necesario
+    argumentacion = db.Column(db.Text, nullable=True)  # Usa `Text` si puede ser muy larga
+    respuesta_correcta = db.Column(db.String(50), nullable=False) # Ajusta según el valor máximo esperado
     # Llave foránea para relacionar la pregunta con un profesor
     profesor_id = db.Column(db.Integer, db.ForeignKey('profesores.id'), nullable=False)
 
@@ -59,4 +62,4 @@ class Pregunta(db.Model):
     profesor = db.relationship('Profesor', back_populates='preguntas')
 
     def __repr__(self):
-        return f'<Pregunta {self.texto[:30]}...>'
+        return f'<Pregunta {self.area}>'

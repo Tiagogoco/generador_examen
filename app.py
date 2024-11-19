@@ -6,7 +6,7 @@ from models import Profesor, Estudiante, db, Usuario, Pregunta  # Asegúrate de 
 
 # Configura la aplicación Flask y carga la configuración de la base de datos
 app = Flask(__name__, static_folder='static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:123@localhost:5432/preguntas'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:123@localhost:5432/preguntas_'
 app.config['SECRET_KEY'] = 'dev'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -105,11 +105,12 @@ def dashboard_profesor():
 def dashboard_estudiante():
     return render_template('estudiantes/estudiante.html')
 
+
 @app.route('/crear_preguntas', methods=['GET', 'POST'])
 def preguntas():
     if 'user_id' not in session or session.get('user_type') != 'profesor':
         flash('Debes iniciar sesión como profesor para acceder a esta página.', 'danger')
-        return redirect(url_for('login_profesor'))  # Redirige al login del profesor si no está logueado
+        return redirect(url_for('login_profesor'))
 
     if request.method == 'POST':
         # Obtener los datos del formulario
@@ -123,21 +124,27 @@ def preguntas():
         tipoRespuesta = request.form['tipoRespuesta']
         argumentacion = request.form['argumentacion']
 
+        # Identificar cuál opción fue marcada como correcta
+        respuesta_correcta = None
+        if 'correcta' in request.form:
+            respuesta_correcta = request.form['correcta']  # Esto contiene el valor de la opción correcta
+
         # Obtener el id del profesor desde la sesión
         profesor_id = session['user_id']
 
-        # Crear una nueva pregunta
+        # Crear una nueva pregunta y almacenar la respuesta correcta
         nueva_pregunta = Pregunta(
             area=area,
             definicion_operacional=definicion,
-            base_reactivo=base_reactivo,  # Puedes asignar alguna de las respuestas aquí si es necesario
+            base_reactivo=base_reactivo,
             opcion1=respuesta1,
             opcion2=respuesta2,
             opcion3=respuesta3,
             opcion4=respuesta4,
             tipo_respuesta=tipoRespuesta,
             argumentacion=argumentacion,
-            profesor_id=profesor_id  # Asociamos la pregunta al profesor
+            respuesta_correcta=respuesta_correcta,  # Guardar la opción correcta
+            profesor_id=profesor_id
         )
 
         # Guardar la pregunta en la base de datos
@@ -145,9 +152,56 @@ def preguntas():
         db.session.commit()
 
         flash('Pregunta creada exitosamente', 'success')
-        return redirect(url_for('dashboard_profesor'))  # Redirigir al dashboard del profesor
+        return redirect(url_for('dashboard_profesor'))
 
     return render_template('profesores/preguntas.html')
+
+@app.route('/editar_preguntas/<int:pregunta_id>', methods=['GET', 'POST'])
+def editar_preguntas(pregunta_id):
+    # Obtener la pregunta de la base de datos
+    pregunta = Pregunta.query.get_or_404(pregunta_id)
+
+    if request.method == 'POST':
+        # Actualizar los datos de la pregunta con los valores del formulario
+        pregunta.area = request.form['area']
+        pregunta.definicion_operacional = request.form['definicion']
+        pregunta.base_reactivo = request.form['base']
+        pregunta.opcion1 = request.form['respuesta1']
+        pregunta.opcion2 = request.form['respuesta2']
+        pregunta.opcion3 = request.form['respuesta3']
+        pregunta.opcion4 = request.form['respuesta4']
+        pregunta.tipo_respuesta = request.form['tipoRespuesta']
+        pregunta.argumentacion = request.form['argumentacion']
+        
+        # Obtener cuál opción es la correcta y actualizar
+        if 'correcta' in request.form:
+            pregunta.respuesta_correcta = request.form['correcta']
+
+        # Guardar los cambios en la base de datos
+        db.session.commit()
+
+        flash('Pregunta actualizada exitosamente', 'success')
+        return redirect(url_for('dashboard_profesor'))
+
+    # Renderizar el formulario con los datos existentes
+    return render_template('profesores/editar.html', pregunta=pregunta)
+
+
+@app.route('/eliminar_preguntas/<int:pregunta_id>', methods=['GET', 'POST'])
+def eliminar_preguntas(pregunta_id):
+    # Obtener la pregunta de la base de datos
+    pregunta = Pregunta.query.get_or_404(pregunta_id)
+
+    if request.method == 'POST':
+        # Eliminar la pregunta de la base de datos
+        db.session.delete(pregunta)
+        db.session.commit()
+
+        flash('Pregunta eliminada exitosamente', 'success')
+        return redirect(url_for('dashboard_profesor'))
+
+    # Renderizar la vista de confirmación de eliminación
+    return render_template('profesores/eliminar.html', pregunta=pregunta)
 
 
 

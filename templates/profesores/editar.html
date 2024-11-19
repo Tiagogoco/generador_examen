@@ -3,91 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Pregunta</title>
+    <title>Editar Pregunta</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 
 <div class="container mt-5">
-    <h2 class="text-center">Crear pregunta</h2>
-    <form action="{{ url_for('preguntas') }}" class="mt-4" method="POST">
+    <h2 class="text-center">Editar Pregunta</h2>
+    <form action="" method="POST" class="mt-4">
         <div class="form-group">
             <label for="area">Área</label>
-            <input type="text" class="form-control" id="area" name="area">
+            <input type="text" class="form-control" id="area" name="area" value="{{ pregunta.area }}">
         </div>
         <div class="form-group">
             <label for="definicion">Definición Operacional</label>
-            <input type="text" class="form-control" id="definicion" name="definicion">
+            <input type="text" class="form-control" id="definicion" name="definicion" value="{{ pregunta.definicion_operacional }}">
         </div>
         <div class="form-group">
             <label for="base">Base de Reactivo</label>
-            <input type="text" class="form-control" id="base" name="base">
+            <input type="text" class="form-control" id="base" name="base" value="{{ pregunta.base_reactivo }}">
         </div>
 
         <div class="form-group">
             <label for="respuesta1">Opción de Respuesta 1</label>
-            <input type="text" class="form-control" id="respuesta1" name="respuesta1">
+            <input type="text" class="form-control" id="respuesta1" name="respuesta1" value="{{ pregunta.opcion1 }}">
             <div class="form-check mt-2">
-                <input class="form-check-input correcta" type="checkbox" id="correcta1" name="correcta" value="respuesta1">
+                <input class="form-check-input" type="radio" id="correcta1" name="correcta" value="respuesta1" {% if pregunta.respuesta_correcta == 'respuesta1' %}checked{% endif %}>
                 <label class="form-check-label" for="correcta1">Es Correcta</label>
             </div>
         </div>
 
         <div class="form-group">
             <label for="respuesta2">Opción de Respuesta 2</label>
-            <input type="text" class="form-control" id="respuesta2" name="respuesta2">
+            <input type="text" class="form-control" id="respuesta2" name="respuesta2" value="{{ pregunta.opcion2 }}">
             <div class="form-check mt-2">
-                <input class="form-check-input correcta" type="checkbox" id="correcta2" name="correcta" value="respuesta2">
+                <input class="form-check-input" type="radio" id="correcta2" name="correcta" value="respuesta2" {% if pregunta.respuesta_correcta == 'respuesta2' %}checked{% endif %}>
                 <label class="form-check-label" for="correcta2">Es Correcta</label>
             </div>
         </div>
 
         <div class="form-group">
             <label for="respuesta3">Opción de Respuesta 3</label>
-            <input type="text" class="form-control" id="respuesta3" name="respuesta3">
+            <input type="text" class="form-control" id="respuesta3" name="respuesta3" value="{{ pregunta.opcion3 }}">
             <div class="form-check mt-2">
-                <input class="form-check-input correcta" type="checkbox" id="correcta3" name="correcta" value="respuesta3">
+                <input class="form-check-input" type="radio" id="correcta3" name="correcta" value="respuesta3" {% if pregunta.respuesta_correcta == 'respuesta3' %}checked{% endif %}>
                 <label class="form-check-label" for="correcta3">Es Correcta</label>
             </div>
         </div>
 
         <div class="form-group">
             <label for="respuesta4">Opción de Respuesta 4</label>
-            <input type="text" class="form-control" id="respuesta4" name="respuesta4">
+            <input type="text" class="form-control" id="respuesta4" name="respuesta4" value="{{ pregunta.opcion4 }}">
             <div class="form-check mt-2">
-                <input class="form-check-input correcta" type="checkbox" id="correcta4" name="correcta" value="respuesta4">
+                <input class="form-check-input" type="radio" id="correcta4" name="correcta" value="respuesta4" {% if pregunta.respuesta_correcta == 'respuesta4' %}checked{% endif %}>
                 <label class="form-check-label" for="correcta4">Es Correcta</label>
             </div>
         </div>
 
         <div class="form-group">
             <label for="tipoRespuesta">Tipo de Respuesta</label>
-            <input type="text" class="form-control" id="tipoRespuesta" name="tipoRespuesta">
+            <input type="text" class="form-control" id="tipoRespuesta" name="tipoRespuesta" value="{{ pregunta.tipo_respuesta }}">
         </div>
         <div class="form-group">
             <label for="argumentacion">Argumentación</label>
-            <textarea class="form-control" id="argumentacion" name="argumentacion" rows="3"></textarea>
+            <textarea class="form-control" id="argumentacion" name="argumentacion" rows="3">{{ pregunta.argumentacion }}</textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block mb-3">Crear Pregunta</button>
+        <button type="submit" class="btn btn-primary btn-block mb-3">Guardar Cambios</button>
     </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>
-    // JavaScript para asegurar que solo una checkbox pueda seleccionarse
-    document.querySelectorAll('.correcta').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            if (this.checked) {
-                document.querySelectorAll('.correcta').forEach(cb => {
-                    if (cb !== this) cb.checked = false;
-                });
-            }
-        });
-    });
-</script>
 </body>
 </html>
